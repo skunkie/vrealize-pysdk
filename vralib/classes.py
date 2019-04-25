@@ -212,6 +212,25 @@ class Session(object):
         url = 'https://' + self.cloudurl + '/identity/api/tenants/' + self.tenant + '/subtenants'
         return self._request(url)
 
+    def get_businessgroup_byname(self, name):
+        """
+
+        Loop through all vRA business groups until you find the one with the specified name. This method allows you to "filter"
+        returned business groups via a partial match.
+
+        """
+        business_groups = self.get_business_groups()
+
+        result = []
+
+        for i in business_groups['content']:
+            element = {'name': i['name'], 'id': i['id']}
+            target = i['name']
+            if name.lower() in target.lower():
+                result.append(element)
+
+        return result
+
     def get_businessgroup_fromid(self, group_id):
         """
 
