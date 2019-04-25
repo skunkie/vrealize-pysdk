@@ -403,6 +403,14 @@ class Session(object):
         url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests'
         return self._iterate_pages(url)
 
+    def get_request(self, request_id):
+        """
+        Returns a requests specified by request_id.
+
+        param request_id:
+        :return:
+        """
+
         url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests/' + request_id
         return self._request(url)
 
