@@ -48,8 +48,23 @@ def getargs():
                         required=False,
                         action='store',
                         help='An optional description for the requested resource. Enclose in quotes.')
+    parser.add_argument('-p', '--parameters',
+                        required=False,
+                        action='store',
+                        help='The path to optional parameters for the requested resource in JSON format.')
     args = parser.parse_args()
     return args
+
+
+def patch_dict(d, p):
+    for k in p:
+        if k in d.keys():
+            if type(d[k]) == dict:
+                d[k] = patch_dict(d[k], p[k])
+            else:
+                d[k] = p[k]
+    return d
+
 
 def main():
     args = getargs()
@@ -72,9 +87,12 @@ def main():
 
     request_template['businessGroupId'] = business_group[0]['id']
 
-    # request_template['description'] = args.description
-    # request_template['reasons'] = args.reasons
-    #
+    if args.parameters:
+        fd = open(args.parameters, 'r')
+        d = json.loads(fd.read())
+        fd.close()
+        request_template = patch_dict(request_template, d)
+
     # request_template['data']['inputServices'] = ["application-2b47b67a-7563-41df-bc9a-b01374210cad"]
     # request_template['data']['defaultSectionId'] = "d69e3a00-6cd9-4832-b7ba-0498b17acda4"
     # request_template['data']['inputSources'] = ["securitygroup-bf4bda4c-fc17-4935-a635-7562d1b36cf0"]
