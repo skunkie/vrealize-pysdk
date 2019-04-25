@@ -183,7 +183,6 @@ class Session(object):
 
     def _iterate_pages(self, url):
         """
-
         Iterates over pages of the HTTP Response.
 
         :return: python dictionary with the JSON response contents.
@@ -202,15 +201,13 @@ class Session(object):
 
     def get_business_groups(self):
         """
-
-        Will retrieve a list of all vRA business groups for the currently logged in tenant
+        Retrieves a list of all vRA business groups for the currently logged in user.
 
         :return: python dictionary with the JSON response contents.
 
         """
-        # test
         url = 'https://' + self.cloudurl + '/identity/api/tenants/' + self.tenant + '/subtenants'
-        return self._request(url)
+        return self._iterate_pages(url)
 
     def get_businessgroup_byname(self, name):
         """
@@ -233,7 +230,6 @@ class Session(object):
 
     def get_businessgroup_fromid(self, group_id):
         """
-
         Lists a business group using the group id
         :return: A python dictionary of the selected business group details 
 
@@ -244,7 +240,6 @@ class Session(object):
 
     def delete_businessgroup_fromid(self, group_id):
         """
-        
         Deletes a business group from vRealize Automation if all other objects have been removed
         :return: Will return a b'' and success
         """
@@ -254,7 +249,6 @@ class Session(object):
 
     def get_entitled_catalog_items(self):
         """
-
         Retrieves a dictionary of all the currently available catalog items for the logged in user/tenant.
         This can result in multi-page output so I've added some basic pagination here.
 
@@ -265,25 +259,10 @@ class Session(object):
         # TODO probably need to deprecate this function
 
         url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/entitledCatalogItems'
-
-        result = self._request(url)
-
-        if result['metadata']['totalPages'] != 1:
-            page = 2  # starting on 2 since we've already got page 1's data
-            while page <= result['metadata']['totalPages']:
-                url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/entitledCatalogItems?page=%s' % page
-                next_page = self._request(url)
-                for i in next_page['content']:
-                    result['content'].append(i)
-                page += 1
-
-            return result
-
-        return result
+        return self._iterate_pages(url)
 
     def get_catalogitem_byname(self, name, catalog=False):
         """
-
         Loop through catalog items until you find the one with the specified name. This method allows you to "filter"
         returned catalog items via a partial match.
 
@@ -338,7 +317,6 @@ class Session(object):
 
     def get_request_template(self, catalogitem):
         """
-
         Retrieve a request template from the API. The template will be stored in a python dictionary where values can
         be modified as needed.
 
@@ -369,7 +347,6 @@ class Session(object):
 
     def request_item(self, catalogitem, payload=False):
         """
-
         Allows you to request an item from the vRealize catalog.
 
         Basic usage:
@@ -408,52 +385,30 @@ class Session(object):
 
     def get_eventbroker_events(self):
         """
-        pick a page
-        https://jupiter.kpsc.lan/event-broker-service/api/events?page=210
-
-        put newest events first in the response
-        https://jupiter.kpsc.lan/event-broker-service/api/events?$orderby=timeStamp desc
-
-        API Docs here:
-        vrealize-automation-70-rest-api-docs%20/docs/event-broker-server-war/api/docs/resource_Consumer%20APIs.html
-
-        Some examples of stuff to work with:
-          "metadata": {
-            "size": 20,
-            "totalElements": 4193,
-            "totalPages": 210,
-            "number": 210,
-            "offset": 4180
-          }
-        ?page=1
-
-        :param vra_session:
+        Returns events from Event Broker
         :return:
         """
         # TODO create a handler for the different API verbs this thing needs to support
-        # TODO this request will need some pagination support
 
         url = 'https://' + self.cloudurl + '/event-broker-service/api/events'
-        return self._request(url)
+        return self._iterate_pages(url)
 
-    def get_requests(self, request_id):
+    def get_requests(self):
         """
-        gets a list of all request unless an id is specified. In that case it will only return the request specified.
+        Returns all requests.
 
-        param id: 
         :return:
         """
 
-        if not request_id:
-            url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests'
-            return self._request(url)
+        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests'
+        return self._iterate_pages(url)
 
         url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests/' + request_id
         return self._request(url)
 
     def get_requests_forms_details(self, resource_id):
         """
-        gets some request details on an individual request. may exclude later.
+        Returns some request details on an individual request. may exclude later.
 
         :return:
         """
@@ -473,27 +428,11 @@ class Session(object):
 
     def get_consumer_resources(self):
         """
-        Gets a list of all the provisioned items out there
-
+        Returns a list of all the provisioned items out there
         :return:
         """
-
-        # TODO update metadata field appropriately
-
         url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/resources'
-        result = self._request(url)
-
-        if result['metadata']['totalPages'] != 1:
-            page = 2  # starting on 2 since we've already got page 1's data
-            while page <= result['metadata']['totalPages']:
-                url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/resources?page=%s' % page
-                next_page = self._request(url)
-                for i in next_page['content']:
-                    result['content'].append(i)
-                page += 1
-            return result
-
-        return result
+        return self._iterate_pages(url)
 
     def get_consumer_resource(self, resource_id):
         url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/resources/' + resource_id
@@ -502,8 +441,7 @@ class Session(object):
 
     def get_reservations_info(self):
         """
-
-        Gets all of the current reservations including allocation percentage and returns a dictionary.
+        Returns all of the current reservations including allocation percentage and returns a dictionary.
         :return: A Python dictionary including all of the reservation information
         """
         url = 'https://' + self.cloudurl + '/reservation-service/api/reservations/info'
@@ -511,8 +449,7 @@ class Session(object):
 
     def get_reservations(self):
         """
-
-        Gets all of the current reservations and returns a dictionary.
+        Returns all of the current reservations and returns a dictionary.
         :return: A Python dictionary including all of the reservations
         """
         url = 'https://' + self.cloudurl + '/reservation-service/api/reservations'
@@ -520,8 +457,7 @@ class Session(object):
 
     def get_reservation(self, reservation_id):
         """
-
-        Gets a reservation details and returns a dictionary.
+        Returns a reservation details and returns a dictionary.
         :return: A Python dictionary including all of the reservation information for a specific reservation
         """
         url = 'https://' + self.cloudurl + '/reservation-service/api/reservations/' + reservation_id
