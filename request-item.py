@@ -15,6 +15,8 @@ import six
 import time
 
 import vralib
+
+from pprint import pprint
 from vralib.vraexceptions import NotFoundError
 
 
@@ -103,8 +105,7 @@ def main():
     # request_template['data']['inputDestinations'] = ["securitygroup-bf4bda4c-fc17-4935-a635-7562d1b36cf0"]
     # request_template['data']['ruleName'] = "vra-service-test001"
 
-    print(json.dumps(request_template, indent=4))
-    #
+    pprint(request_template, indent=4)
 
     # TODO add some logic to query for options here.
     # TODO should be noted that this only changes one custom property. Need to design some logic to extend this
@@ -112,26 +113,24 @@ def main():
 
     build_vm = vra.request_item(catalogitem=args.catalogitem,
                                 payload=request_template)
-    # #
-    # #
-    request_id = build_vm['id']
-    provisioned_state = vra.get_requests(id=request_id)
 
-    #
-    while 'SUCCESSFUL' not in provisioned_state['state']:
-        provisioned_state = vra.get_requests(id=request_id)
-        print('Current provisioning state is:', provisioned_state['stateName'],
-              'Current phase is:', provisioned_state['phase'])
-        if provisioned_state['state'] == 'PROVIDER_FAILED':
+    while True:
+        vra_request = vra.get_request(request_id=build_vm['id'])
+        print('Current provisioning state is:', vra_request['stateName'],
+              'Current phase is:', vra_request['phase'])
+        if vra_request['state'] == 'PROVIDER_FAILED':
             raise Exception('Request provider failed! Dumping JSON output of request',
-                            json.dumps(provisioned_state, indent=4))
-        if provisioned_state['state'] == 'FAILED':
+                            pprint(vra_request, indent=4))
+        elif vra_request['state'] == 'FAILED':
             raise Exception('Failed inside of vRA! Dumping JSON output of request',
-                            json.dumps(provisioned_state, indent=4))
+                            pprint(vra_request, indent=4))
+        elif vra_request['state'] == 'SUCCESSFUL':
+            break
         time.sleep(5)
 
     print("#" * 80)
-    print(json.dumps(provisioned_state, indent=4))
+    pprint(vra_request, indent=4)
+
 
 if __name__ == '__main__':
     main()
