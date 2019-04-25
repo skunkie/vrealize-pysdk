@@ -138,7 +138,7 @@ class Session(object):
         (assuming an instance of this class called vra)
       
         out = vra._request(url="https://vra.kpsc.io/properties-service/api/propertygroups")
-        print json.dumps(out, indent=4)
+        print(json.dumps(out, indent=4))
         
         :param url: The complete URL for the requested resource
         :param request_method: An HTTP method that is either PUT, POST or GET
@@ -147,7 +147,6 @@ class Session(object):
         :return: A python dictionary containing the response JSON
         
         """
-        url = url
 
         if request_method == "PUT" or "POST" and payload:
             if type(payload) == dict:
@@ -162,8 +161,6 @@ class Session(object):
             if not r.ok:
                 raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code, r.content)
 
-            return r.content
-
         elif request_method == "GET":
             r = requests.request(request_method,
                                  url=url,
@@ -172,8 +169,6 @@ class Session(object):
 
             if not r.ok:
                 raise requests.exceptions.HTTPError('HTTP error. Status and content:', r.status_code, r.content)
-
-            return json.loads(r.content)
 
         elif request_method == "DELETE":
             r = requests.request(request_method,
@@ -184,7 +179,7 @@ class Session(object):
             if not r.ok:
                 raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code)
 
-            return r.content
+        return json.loads(r.content)
 
     def get_business_groups(self):
         """
