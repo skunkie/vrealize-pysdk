@@ -86,6 +86,10 @@ def main():
     request_template = vra.get_request_template(catalogitem=args.catalogitem)
 
     request_template['businessGroupId'] = business_group[0]['id']
+    if args.description:
+        request_template['description'] = args.description
+    if args.reasons:
+        request_template['reasons'] = args.reasons
 
     if args.parameters:
         fd = open(args.parameters, 'r')
