@@ -10,10 +10,11 @@ __version__ = "$Revision"
 
 import getpass
 import argparse
-import vralib
 import json
+import six
 import time
 
+import vralib
 def getargs():
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--server',
@@ -49,9 +50,8 @@ def main():
     username = args.username
     tenant = args.tenant
     if not username:
-        username = raw_input("vRA Username (user@domain):")
-
-    password = getpass.getpass("vRA Password:")
+        username = six.moves.input('vRA Username (user@domain): ')
+    password = getpass.getpass('vRA Password: ')
     vra = vralib.Session.login(username, password, cloudurl,
                                tenant, ssl_verify=False)
 
