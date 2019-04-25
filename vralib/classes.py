@@ -181,6 +181,25 @@ class Session(object):
 
         return json.loads(r.content)
 
+    def _iterate_pages(self, url):
+        """
+
+        Iterates over pages of the HTTP Response.
+
+        :return: python dictionary with the JSON response contents.
+        """
+        result = self._request(url)
+
+        if result['metadata']['totalPages'] != 1:
+            page = 2
+            while page <= result['metadata']['totalPages']:
+                next_page = self._request(url + '?page=%s' % page)
+                for i in next_page['content']:
+                    result['content'].append(i)
+                page += 1
+
+        return result
+
     def get_business_groups(self):
         """
 
