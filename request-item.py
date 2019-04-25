@@ -15,6 +15,9 @@ import six
 import time
 
 import vralib
+from vralib.vraexceptions import NotFoundError
+
+
 def getargs():
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--server',
@@ -29,6 +32,10 @@ def getargs():
                         required=True,
                         action='store',
                         help='vRealize tenant')
+    parser.add_argument('-b', '--businessgroup',
+                        required=True,
+                        action='store',
+                        help='The full name of the business group')
     parser.add_argument('-c', '--catalogitem',
                         required=True,
                         action='store',
@@ -55,8 +62,15 @@ def main():
     vra = vralib.Session.login(username, password, cloudurl,
                                tenant, ssl_verify=False)
 
+    business_group = vra.get_businessgroup_byname(args.businessgroup)
+    if not business_group:
+        raise NotFoundError("Business Group %s is not found, exiting" % args.businessgroup)
+    if len(business_group) > 1:
+        raise Exception("Found %d Business Groups for %s, exiting" % (len(business_group), args.businessgroup))
+
     request_template = vra.get_request_template(catalogitem=args.catalogitem)
 
+    request_template['businessGroupId'] = business_group[0]['id']
 
     # request_template['description'] = args.description
     # request_template['reasons'] = args.reasons
