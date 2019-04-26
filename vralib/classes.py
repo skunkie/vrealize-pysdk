@@ -221,9 +221,9 @@ class Session(object):
         result = []
 
         for i in business_groups['content']:
-            element = {'name': i['name'], 'id': i['id']}
             target = i['name']
             if name.lower() in target.lower():
+                element = {'name': i['name'], 'id': i['id']}
                 result.append(element)
 
         return result
