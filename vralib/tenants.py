@@ -1,5 +1,3 @@
-import json
-import requests
 from .classes import Session
 
 class Tenant(Session):
