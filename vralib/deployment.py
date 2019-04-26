@@ -65,7 +65,7 @@ class Deployment(object):
         deployment_children = []
 
         for op in deployment["operations"]:
-            base_url = f"https://{session.cloudurl}/catalog-service/api/consumer/resources/"
+            base_url = 'https://%s/catalog-service/api/consumer/resources' % session.cloudurl
             op_id = op["id"]
             operation = {"name": op["name"],
                          "description": op["description"],
@@ -94,8 +94,8 @@ class Deployment(object):
 
     @staticmethod
     def _get_children(session, resource_id):
-        base_url = f"https://{session.cloudurl}/catalog-service/api/consumer/resourceViews"
-        arguments = f"?managedOnly=false&withExtendedData=true&withOperations=true&$filter=parentResource eq '{resource_id}'"
+        base_url = 'https://%s/catalog-service/api/consumer/resourceViews' % session.cloudurl
+        arguments = "?managedOnly=false&withExtendedData=true&withOperations=true&$filter=parentResource eq '%s'" % resource_id
         children = session._request(url=base_url+arguments)
         return children
 

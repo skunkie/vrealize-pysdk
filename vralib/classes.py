@@ -98,7 +98,7 @@ class Session(object):
                 except AttributeError:
                     pass
             r = requests.post(
-                url='https://' + cloudurl + '/identity/api/tokens',
+                url='https://%s/identity/api/tokens' % cloudurl,
                 headers={'Content-type': 'Application/json',
                          'Accept': 'Application/json'},
                 verify=ssl_verify,
@@ -112,7 +112,7 @@ class Session(object):
             vratoken = json.loads(r.content)
 
             if 'id' in vratoken.keys():
-                auth_header = 'Bearer ' + vratoken['id']
+                auth_header = 'Bearer %s' % vratoken['id']
                 return cls(username, cloudurl, tenant, auth_header, ssl_verify)
             else:
                 raise InvalidToken('No bearer token found in response. Response was:',
@@ -208,6 +208,8 @@ class Session(object):
         :return: python dictionary with the JSON response contents.
         """
 
+        url = 'https://%s/identity/api/tenants/%s/subtenants' % (
+            self.cloudurl, self.tenant)
         return self._iterate_pages(url)
 
     def get_businessgroup_byname(self, name):
@@ -233,8 +235,9 @@ class Session(object):
 
         :return: A python dictionary of the selected business group details
         """
-        
-        url = 'https://' + self.cloudurl + '/identity/api/tenants/' + self.tenant + '/subtenants/' + group_id
+
+        url = 'https://%s/identity/api/tenants/%s/subtenants/%s' % (
+            self.cloudurl, self.tenant, group_id)
         return self._request(url)
 
     def delete_businessgroup_fromid(self, group_id):
@@ -244,8 +247,9 @@ class Session(object):
         :return:
         """
 
-        url = 'https://' + self.cloudurl + '/identity/api/tenants/' + self.tenant + '/subtenants/' + group_id
-        return self._request(url,request_method='DELETE') 
+        url = 'https://%s/identity/api/tenants/%s/subtenants/%s' % (
+            self.cloudurl, self.tenant, group_id)
+        return self._request(url, request_method='DELETE')
 
     def get_entitled_catalog_items(self):
         """
@@ -258,8 +262,7 @@ class Session(object):
         # TODO update the output dict's page number to reflect a list of page numbers iterated through
         # TODO add exception handling for when you're not actually entitled to anything.
         # TODO probably need to deprecate this function
-
-        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/entitledCatalogItems'
+        url = 'https://%s/catalog-service/api/consumer/entitledCatalogItems' % self.cloudurl
         return self._iterate_pages(url)
 
     def get_catalogitem_byname(self, name, catalog=False):
@@ -311,6 +314,8 @@ class Session(object):
         :return: A dictionary containing the response from the request
         """
 
+        url = "https://%s/catalog-service/api/consumer/entitledCatalogItems?$filter=id eq '%s'" % (
+            self.cloudurl, catalog_id)
         return self._request(url)
 
     def get_request_template(self, catalogitem):
@@ -322,7 +327,9 @@ class Session(object):
         :param catalogitem: The UUID of the catalog item to retrieve a template for
         :return: A python dictionary representation of the JSON return from the API
         """
-        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/entitledCatalogItems/' + catalogitem + '/requests/template'
+
+        url = 'https://%s/catalog-service/api/consumer/entitledCatalogItems/%s/requests/template' % (
+            self.cloudurl, catalogitem)
         return self._request(url)
 
     def get_request_template_url(self, catalogitem):
@@ -331,7 +338,9 @@ class Session(object):
         :param catalogitem:
         :return:
         """
-        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/entitledCatalogItems/' + catalogitem + '/requests/template'
+
+        url = 'https://%s/catalog-service/api/consumer/entitledCatalogItems/%s/requests/template' % (
+            self.cloudurl, catalogitem)
         return url
 
     def get_request_url(self, catalogitem):
@@ -341,7 +350,9 @@ class Session(object):
 
         :return:
         """
-        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/entitledCatalogItems/' + catalogitem + '/requests'
+
+        url = 'https://%s/catalog-service/api/consumer/entitledCatalogItems/%s/requests' % (
+            self.cloudurl, catalogitem)
         return url
 
     def request_item(self, catalogitem, payload=False):
@@ -378,7 +389,8 @@ class Session(object):
         if not payload:
             payload = self.get_request_template(catalogitem)
 
-        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/entitledCatalogItems/' + catalogitem + '/requests'
+        url = 'https://%s/catalog-service/api/consumer/entitledCatalogItems/%s/requests' % (
+            self.cloudurl, catalogitem)
         return self._request(url, request_method="POST", payload=payload)
 
     def get_eventbroker_events(self):
@@ -389,7 +401,7 @@ class Session(object):
 
         # TODO create a handler for the different API verbs this thing needs to support
 
-        url = 'https://' + self.cloudurl + '/event-broker-service/api/events'
+        url = 'https://%s/event-broker-service/api/events' % self.cloudurl
         return self._iterate_pages(url)
 
     def get_requests(self):
@@ -398,7 +410,7 @@ class Session(object):
         :return:
         """
 
-        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests'
+        url = 'https://%s/catalog-service/api/consumer/requests' % self.cloudurl
         return self._iterate_pages(url)
 
     def get_request(self, request_id):
@@ -409,7 +421,8 @@ class Session(object):
         :return:
         """
 
-        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests/' + request_id
+        url = 'https://%s/catalog-service/api/consumer/requests/%s' % (
+            self.cloudurl, request_id)
         return self._request(url)
 
     def get_requests_forms_details(self, resource_id):
@@ -420,7 +433,8 @@ class Session(object):
         :return:
         """
 
-        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests/' + resource_id
+        url = 'https://%s/catalog-service/api/consumer/requests/%s' % (
+            self.cloudurl, resource_id)
         return self._request(url)
 
     def get_request_details(self, request_id):
@@ -432,7 +446,9 @@ class Session(object):
 
         :return:
         """
-        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/requests/' + request_id + '/resourceViews'
+
+        url = 'https://%s/catalog-service/api/consumer/requests/%s/resourceViews' % (
+            self.cloudurl, request_id)
         return self._request(url)
 
     def get_consumer_resources(self):
@@ -440,7 +456,8 @@ class Session(object):
 
         :return:
         """
-        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/resources'
+
+        url = 'https://%s/catalog-service/api/consumer/resources' % self.cloudurl
         return self._iterate_pages(url)
 
     def get_consumer_resource(self, resource_id):
@@ -448,9 +465,10 @@ class Session(object):
 
         :return:
         """
-        url = 'https://' + self.cloudurl + '/catalog-service/api/consumer/resources/' + resource_id
-        result = self._request(url)
-        return result
+
+        url = 'https://%s/catalog-service/api/consumer/resources/%s' % (
+            self.cloudurl, resource_id)
+        return self._request(url)
 
     def get_reservations_info(self):
         """
@@ -458,7 +476,8 @@ class Session(object):
 
         :return: A Python dictionary including all of the reservation information
         """
-        url = 'https://' + self.cloudurl + '/reservation-service/api/reservations/info'
+
+        url = 'https://%s/reservation-service/api/reservations/info' % self.cloudurl
         return self._request(url)
 
     def get_reservations(self):
@@ -466,7 +485,8 @@ class Session(object):
 
         :return: A Python dictionary including all of the reservations
         """
-        url = 'https://' + self.cloudurl + '/reservation-service/api/reservations'
+
+        url = 'https://%s/reservation-service/api/reservations' % self.cloudurl
         return self._request(url)
 
     def get_reservation(self, reservation_id):
@@ -474,7 +494,9 @@ class Session(object):
 
         :return: A Python dictionary including all of the reservation information for a specific reservation
         """
-        url = 'https://' + self.cloudurl + '/reservation-service/api/reservations/' + reservation_id
+
+        url = 'https://%s/reservation-service/api/reservations/%s' % (
+            self.cloudurl, reservation_id)
         return self._request(url)
 
     def new_reservation_from_existing(self, name, existing_reservation_id):
@@ -485,6 +507,9 @@ class Session(object):
         # TODO update to return JSON for newly created reservation on completion
         # TODO update to take input of desired assigned business group ID as well; currently assigns to whatever is in template; can't be modified
 
+        url = 'https://%s/reservation-service/api/reservations' % self.cloudurl
+        template = self._request(
+            'https://%s/reservation-service/api/reservations/%s' % (self.cloudurl, existing_reservation_id))
         template['id'] = None
         template['name'] = name
         return self._request(url, request_method='POST', payload=template)
@@ -496,7 +521,8 @@ class Session(object):
         """
 
         options = "?managedOnly=false&withExtenedData=true&withOperations=true"
-        url = f'https://{self.cloudurl}/catalog-service/api/consumer/resourceViews/{resource_id}{options}'
+        url = 'https://%s/catalog-service/api/consumer/resourceViews/%s%s' % (
+            self.cloudurl, resource_id, options)
         return self._request(url)
 
 # TODO build blueprints
