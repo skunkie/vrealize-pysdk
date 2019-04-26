@@ -14,12 +14,12 @@ class Deployment(object):
 
     def __init__(self, session, deployment, operations, deployment_children):
         """
-
         :param session:
         :param deployment:
         :param operations:
         :param deployment_children:
         """
+
         self.session = session
         self.deployment_json = deployment
         self.resource_id = deployment["id"]
@@ -47,13 +47,17 @@ class Deployment(object):
 
     @classmethod
     def fromid(cls, session, resource_id):
-        """Creates an instance based on the GUID in vRA. If the deployment has children it will attempt to resolve them
+        """Creates an instance based on the GUID in vRA.
+
+        If the deployment has children it will attempt to resolve them
         and store them in a list as deployment_children.
 
         :param session:
         :param resource_id:
+
         :return:
         """
+
         # Grab a dict with the given deployment in there and use as input
         deployment = session.get_consumer_resource(resource_id=resource_id)
         # Store operations and deployment children in a list
@@ -96,7 +100,9 @@ class Deployment(object):
         return children
 
     def scale_out(self, new_value):
-        """Currently this only works with a single tier app. Need to sort out how to make it better
+        """Currently this only works with a single tier app.
+
+        Need to sort out how to make it better.
 
         :return:
         """
@@ -151,6 +157,7 @@ class Deployment(object):
 
         :param force: Boolean, if set to True it will attempt to force the destroy.
                       This should only be invoked if a regular destroy fails
+
         :return:
         """
         #LOL for some reason forcing a destroy will make the server return an error 400 telling you
@@ -182,11 +189,9 @@ class Deployment(object):
             #>>> deployment.change_lease(expiration_date="2018-12-15T19:31:54.672Z")
 
         :param expiration_date: String formatted date in ISO 8601 format. For example: "2018-12-15T19:31:54.672Z"
+
         :return: A byte string of the response from the webserver. On success it will be empty.
         """
-        #LOL date needs to include an ISO 8601 timestamp down to the millisecond. Should probably just be ok with date.
-        template = self.get_operation_template(operation="Change Lease")
-        template["data"]["provider-ExpirationDate"] = expiration_date
 
         return self.execute_operation(operation="Change Lease", payload=template)
 
@@ -196,6 +201,7 @@ class VirtualMachine(Deployment):
     """
     This class is used to manage VirtualMachine specific deployments. It provides a handful of helpful methods
     specific to virtual machines.
+    """
 
     """
     #TODO maybe see if I could do something more efficient with **kwargs
@@ -244,11 +250,11 @@ class VirtualMachine(Deployment):
 
 
 class LoadBalancer(Deployment):
-    """Waiting to implement this due to bug in the vRA 7.3 API with retrieving template"""
+    """Waiting to implement this due to bug in the vRA 7.3 API with retrieving template."""
     pass
 
+
 class Edge(Deployment):
-    """"""
     pass
 
 class Network(Deployment):

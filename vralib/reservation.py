@@ -5,10 +5,8 @@ __author__ = 'Cody De Arkland'
 
 
 class Reservation(object):
-    """
-    Manage existing reservations
+    """ Manage existing reservations."""
 
-    """
     def __init__(self, session, reservation):
         self.session = session
         self.reservation_json = reservation
