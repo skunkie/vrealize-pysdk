@@ -170,6 +170,9 @@ class Session(object):
             if not r.ok:
                 raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code)
 
+        else:
+            raise Exception('Method %s is not implemented.' % request_method)
+
         return json.loads(r.content)
 
     def _iterate_pages(self, url):
