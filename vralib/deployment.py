@@ -22,28 +22,28 @@ class Deployment(object):
 
         self.session = session
         self.deployment_json = deployment
-        self.resource_id = deployment["id"]
-        self.resource_type = deployment["resourceTypeRef"]
-        self.description = deployment["description"]
-        self.name = deployment["name"]
-        self.request_id = deployment["requestId"]
-        self.business_group_id = deployment["organization"]["subtenantRef"]
-        self.business_group_label = deployment["organization"]["subtenantLabel"]
-        self.date_created = deployment["dateCreated"]
-        self.owners = deployment["owners"]
-        self.tenant_id = deployment["organization"]["tenantRef"]
+        self.resource_id = deployment['id']
+        self.resource_type = deployment['resourceTypeRef']
+        self.description = deployment['description']
+        self.name = deployment['name']
+        self.request_id = deployment['requestId']
+        self.business_group_id = deployment['organization']['subtenantRef']
+        self.business_group_label = deployment['organization']['subtenantLabel']
+        self.date_created = deployment['dateCreated']
+        self.owners = deployment['owners']
+        self.tenant_id = deployment['organization']['tenantRef']
 
         # self.costs = costs
         # self.costs_to_date = costs_to_date
         # self.total_cost = total_cost
 
-        self.lease = deployment["lease"]
+        self.lease = deployment['lease']
         self.operations = operations
 
         self.deployment_children = deployment_children
 
-        if "parentResourceRef" in deployment.keys():
-            self.parent_resource = deployment["parentResourceRef"]
+        if 'parentResourceRef' in deployment.keys():
+            self.parent_resource = deployment['parentResourceRef']
 
     @classmethod
     def fromid(cls, session, resource_id):
@@ -64,31 +64,35 @@ class Deployment(object):
         operations = []
         deployment_children = []
 
-        for op in deployment["operations"]:
+        for op in deployment['operations']:
             base_url = 'https://%s/catalog-service/api/consumer/resources' % session.cloudurl
-            op_id = op["id"]
-            operation = {"name": op["name"],
-                         "description": op["description"],
-                         "id": op["id"],
-                         "template_url": f"{base_url}{resource_id}/actions/{op_id}/requests/template",
-                         "request_url": f"{base_url}{resource_id}/actions/{op_id}/requests"}
+            operation = {'name': op['name'],
+                         'description': op['description'],
+                         'id': op['id'],
+                         'template_url': '%s/%s/actions/%s/requests/template' % (base_url, resource_id, op['id']),
+                         'request_url': '%s/%s/actions/%s/requests'} % (base_url, resource_id, op['id'])
 
             operations.append(operation)
 
         # See if we have children and if we do create an instance of the appropriate class
-        if deployment["hasChildren"] == True:
+        if deployment['hasChildren'] == True:
             children = Deployment._get_children(session, resource_id)
-            for child in children["content"]:
-                if child["resourceType"] == "Infrastructure.Virtual":
-                    deployment_children.append(VirtualMachine.fromid(session, child["resourceId"]))
-                if child["resourceTypet"] == "Infrastructure.Network.LoadBalancer.NSX":
-                    deployment_children.append(LoadBalancer.fromid(session, child["resourceId"]))
-                if child["resourceType"] == "Infrastructure.Network.Gateway.NSX.Edge":
-                    deployment_children.append(Edge.fromid(session, child["resourceId"]))
-                if child["resourceType"] == "Infrastructure.Network.Network.Existing":
-                    deployment_children.append(Network.fromid(session, child["resourceId"]))
-                if child["resourceType"] == "composition.resource.type.deployment":
-                    deployment_children.append(Deployment.fromid(session, child["resourceId"]))
+            for child in children['content']:
+                if child['resourceType'] == 'Infrastructure.Virtual':
+                    deployment_children.append(
+                        VirtualMachine.fromid(session, child['resourceId']))
+                if child['resourceTypet'] == 'Infrastructure.Network.LoadBalancer.NSX':
+                    deployment_children.append(
+                        LoadBalancer.fromid(session, child['resourceId']))
+                if child['resourceType'] == 'Infrastructure.Network.Gateway.NSX.Edge':
+                    deployment_children.append(
+                        Edge.fromid(session, child['resourceId']))
+                if child['resourceType'] == 'Infrastructure.Network.Network.Existing':
+                    deployment_children.append(
+                        Network.fromid(session, child['resourceId']))
+                if child['resourceType'] == 'composition.resource.type.deployment':
+                    deployment_children.append(
+                        Deployment.fromid(session, child['resourceId']))
 
         return cls(session, deployment, operations, deployment_children)
 
@@ -115,15 +119,16 @@ class Deployment(object):
         template = None
 
         for operation in self.operations:
-            if operation["name"] == "Scale Out":
-                template = self.session._request(url=operation["template_url"])
-                for key, value in template["data"].items():
-                    for inner_key, inner_value in template["data"][key]["data"].items():
-                        template["data"][key]["data"][inner_key]["data"]["_cluster"] = new_value
+            if operation['name'] == 'Scale Out':
+                template = self.session._request(url=operation['template_url'])
+                for key, value in template['data'].items():
+                    for inner_key, inner_value in template['data'][key]['data'].items():
+                        template['data'][key]['data'][inner_key]['data']['_cluster'] = new_value
 
         for o in self.operations:
-            if o["name"] == "Scale Out":
-                scale_out = self.session._request(url=o["request_url"], request_method="POST", payload=template)
+            if o['name'] == 'Scale Out':
+                scale_out = self.session._request(
+                    url=o['request_url'], request_method='POST', payload=template)
                 return scale_out
 
     def get_operation_template(self, operation):
@@ -135,16 +140,16 @@ class Deployment(object):
 
         :return: A Python dictionary that may be modified and used in the execute_operation() method
         """
+
         for o in self.operations:
-            if o["name"] == operation:
-                return self.session._request(url=o["template_url"])
+            if o['name'] == operation:
+                return self.session._request(url=o['template_url'])
 
     def execute_operation(self, operation, payload):
-        #TODO See if there's a better way to find the operation to improve performance
+        # TODO See if there's a better way to find the operation to improve performance
         for o in self.operations:
-            if o["name"] == operation:
-                return self.session._request(url=o["request_url"], request_method="POST", payload=payload)
-
+            if o['name'] == operation:
+                return self.session._request(url=o['request_url'], request_method='POST', payload=payload)
 
     def destroy(self, force=False):
         """Used to destroy the deployment. The deployment may be force destroyed if it failed previously.
@@ -160,13 +165,14 @@ class Deployment(object):
 
         :return:
         """
-        #LOL for some reason forcing a destroy will make the server return an error 400 telling you
-        #LOL     that you can only force out a previously failed destroy action
-        template = self.get_operation_template(operation="Destroy")
-        if force:
-            template["data"]["ForceDestroy"] = "True"
 
-        return self.execute_operation(operation="Destroy", payload=template)
+        # for some reason forcing a destroy will make the server return an error 400 telling you
+        # that you can only force out a previously failed destroy action
+        template = self.get_operation_template(operation='Destroy')
+        if force:
+            template['data']['ForceDestroy'] = 'True'
+
+        return self.execute_operation(operation='Destroy', payload=template)
 
     def expire(self):
         """Expires the deployment
@@ -177,8 +183,9 @@ class Deployment(object):
 
         :return: A byte string of the response from the webserver. On success it will be empty.
         """
-        template = self.get_operation_template(operation="Expire")
-        return self.execute_operation(operation="Expire", payload=template)
+
+        template = self.get_operation_template(operation='Expire')
+        return self.execute_operation(operation='Expire', payload=template)
 
     def change_lease(self, expiration_date):
         """Used to change the lease of the deployment.
@@ -193,8 +200,11 @@ class Deployment(object):
         :return: A byte string of the response from the webserver. On success it will be empty.
         """
 
-        return self.execute_operation(operation="Change Lease", payload=template)
+        # date needs to include an ISO 8601 timestamp down to the millisecond. Should probably just be ok with date.
+        template = self.get_operation_template(operation='Change Lease')
+        template['data']['provider-ExpirationDate'] = expiration_date
 
+        return self.execute_operation(operation='Change Lease', payload=template)
 
 
 class VirtualMachine(Deployment):
@@ -203,35 +213,34 @@ class VirtualMachine(Deployment):
     specific to virtual machines.
     """
 
-    """
-    #TODO maybe see if I could do something more efficient with **kwargs
+    # TODO maybe see if I could do something more efficient with **kwargs
     def power_cycle(self):
-        template = self.get_operation_template(operation="Power Cycle")
-        return self.execute_operation(operation="Power Cycle", payload=template)
+        template = self.get_operation_template(operation='Power Cycle')
+        return self.execute_operation(operation='Power Cycle', payload=template)
 
     def power_on(self):
-        template = self.get_operation_template(operation="Power On")
-        return self.execute_operation(operation="Power On", payload=template)
+        template = self.get_operation_template(operation='Power On')
+        return self.execute_operation(operation='Power On', payload=template)
 
     def power_off(self):
-        template = self.get_operation_template(operation="Power Off")
-        return self.execute_operation(operation="Power Off", payload=template)
+        template = self.get_operation_template(operation='Power Off')
+        return self.execute_operation(operation='Power Off', payload=template)
 
     def reboot(self):
-        template = self.get_operation_template(operation="Reboot")
-        return self.execute_operation(operation="Reboot", payload=template)
+        template = self.get_operation_template(operation='Reboot')
+        return self.execute_operation(operation='Reboot', payload=template)
 
     def install_tools(self):
-        template = self.get_operation_template(operation="Install Tools")
-        return self.execute_operation(operation="Install Tools", payload=template)
+        template = self.get_operation_template(operation='Install Tools')
+        return self.execute_operation(operation='Install Tools', payload=template)
 
     def shutdown(self):
-        template = self.get_operation_template(operation="Shutdown")
-        return self.execute_operation(operation="Shutdown", payload=template)
+        template = self.get_operation_template(operation='Shutdown')
+        return self.execute_operation(operation='Shutdown', payload=template)
 
     def suspend(self):
-        template = self.get_operation_template(operation="Suspend")
-        return self.execute_operation(operation="Suspend", payload=template)
+        template = self.get_operation_template(operation='Suspend')
+        return self.execute_operation(operation='Suspend', payload=template)
 
     def get_reconfigure_template(self):
         pass
