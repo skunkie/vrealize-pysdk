@@ -1,7 +1,9 @@
 from .classes import Session
 
+
 class Tenant(Session):
     pass
+
 
 class BusinessGroup(Tenant):
 
@@ -10,9 +12,7 @@ class BusinessGroup(Tenant):
         pass
 
 
-
 class Reservation(BusinessGroup):
-
 
     @classmethod
     def get_fromid(cls, session, id):
@@ -33,6 +33,3 @@ class Reservation(BusinessGroup):
     @staticmethod
     def get_reservation_types(session):
         pass
-
-
-
