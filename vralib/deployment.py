@@ -257,5 +257,6 @@ class LoadBalancer(Deployment):
 class Edge(Deployment):
     pass
 
+
 class Network(Deployment):
     pass

@@ -5,12 +5,14 @@ __author__ = 'Russell Pope'
 
 import json
 import requests
+
 from vralib.vraexceptions import InvalidToken
 
 try:
     from requests.packages.urllib3.exceptions import InsecureRequestWarning
 except ImportError:
     pass
+
 
 class Session(object):
     """
@@ -91,7 +93,8 @@ class Session(object):
         try:
             if not ssl_verify:
                 try:
-                    requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+                    requests.packages.urllib3.disable_warnings(
+                        InsecureRequestWarning)
                 except AttributeError:
                     pass
             r = requests.post(
@@ -120,7 +123,8 @@ class Session(object):
                 'Unable to connect to server %s.' % cloudurl)
 
         except requests.exceptions.HTTPError:
-            raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code)
+            raise requests.exceptions.HTTPError(
+                'HTTP error. Status code was:', r.status_code)
 
     def _request(self, url, request_method='GET', payload=None, **kwargs):
         """
@@ -150,7 +154,8 @@ class Session(object):
                                  data=payload)
 
             if not r.ok:
-                raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code, r.content)
+                raise requests.exceptions.HTTPError(
+                    'HTTP error. Status code was:', r.status_code, r.content)
 
         elif request_method == "GET":
             r = requests.request(request_method,
@@ -159,16 +164,18 @@ class Session(object):
                                  verify=self.ssl_verify)
 
             if not r.ok:
-                raise requests.exceptions.HTTPError('HTTP error. Status and content:', r.status_code, r.content)
+                raise requests.exceptions.HTTPError(
+                    'HTTP error. Status and content:', r.status_code, r.content)
 
         elif request_method == "DELETE":
             r = requests.request(request_method,
-                                url=url,
-                                headers=self.headers,
-                                verify=self.ssl_verify)
+                                 url=url,
+                                 headers=self.headers,
+                                 verify=self.ssl_verify)
 
             if not r.ok:
-                raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code)
+                raise requests.exceptions.HTTPError(
+                    'HTTP error. Status code was:', r.status_code)
 
         else:
             raise Exception('Method %s is not implemented.' % request_method)
