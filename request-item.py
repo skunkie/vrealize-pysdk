@@ -37,11 +37,11 @@ def getargs():
     parser.add_argument('-b', '--businessgroup',
                         required=True,
                         action='store',
-                        help='The full name of the business group')
+                        help='The partial or full name of the business group')
     parser.add_argument('-c', '--catalogitem',
                         required=True,
                         action='store',
-                        help='The partial or full name of the catalog item you want the ID for')
+                        help='The partial or full name of the catalog item')
     parser.add_argument('-r', '--reasons',
                         required=True,
                         action='store',
@@ -79,15 +79,26 @@ def main():
     vra = vralib.Session.login(username, password, cloudurl,
                                tenant, ssl_verify=False)
 
-    business_group = vra.get_businessgroup_byname(args.businessgroup)
-    if not business_group:
-        raise NotFoundError("Business Group %s is not found, exiting" % args.businessgroup)
-    if len(business_group) > 1:
-        raise Exception("Found %d Business Groups for %s, exiting" % (len(business_group), args.businessgroup))
+    business_groups = vra.get_businessgroup_byname(args.businessgroup)
+    if not business_groups:
+        raise NotFoundError("Business Group %s is not found" % args.businessgroup)
+    if len(business_groups) > 1:
+        raise Exception("Found %d Business Groups for %s" % (len(business_groups), args.businessgroup))
 
-    request_template = vra.get_request_template(catalogitem=args.catalogitem)
+    catalog_items = vra.get_catalogitem_byname(args.catalogitem)
+    if not catalog_items:
+        raise NotFoundError("Catalog Item %s is not found" % args.catalogitem)
+    if len(catalog_items) > 1:
+        raise Exception("Found %d Catalog Items for %s" % (len(catalog_items), args.catalogitem))
 
-    request_template['businessGroupId'] = business_group[0]['id']
+    business_group_id = business_groups[0]['id']
+    catalog_item_id = catalog_items[0]['id']
+
+    request_template = vra.get_request_template(catalogitem=catalog_item_id)
+
+    # the catalog item can be available for more than business group,
+    # so specify the business group
+    request_template['businessGroupId'] = business_group_id
     if args.description:
         request_template['description'] = args.description
     if args.reasons:
@@ -111,7 +122,7 @@ def main():
     # TODO should be noted that this only changes one custom property. Need to design some logic to extend this
     # request_template['data']['Linux_vSphere_VM']['data']['Puppet.RoleClass'] = "role::linux_mysql_database"
 
-    build_vm = vra.request_item(catalogitem=args.catalogitem,
+    build_vm = vra.request_item(catalogitem=catalog_item_id,
                                 payload=request_template)
 
     while True:
