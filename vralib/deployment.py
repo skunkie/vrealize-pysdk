@@ -1,13 +1,7 @@
-"""
-
-    Python module for interfacing with the vRealize API
-    Primarily used for reporting initially.
-
-"""
 # TODO implement logging
 
-
 __author__ = 'Russell Pope'
+
 
 class Deployment(object):
     """Manage existing deployments

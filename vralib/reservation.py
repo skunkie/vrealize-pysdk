@@ -1,16 +1,8 @@
-"""
-
-    Python module for interfacing with the vRealize API
-    Primarily used for reporting initially.
-
-    This thing is kind of a mess so tread carefully while I piece it back together.
-
-"""
-# TODO Add values for Network, Storage, Computer to object. Multiple nested Arrays. Do it based on index? 
-# TODO Create reporting functionality off of reservation object. Pretty tables?  
-
+# TODO Add values for Network, Storage, Computer to object. Multiple nested Arrays. Do it based on index?
+# TODO Create reporting functionality off of reservation object. Pretty tables?
 
 __author__ = 'Cody De Arkland'
+
 
 class Reservation(object):
     """
