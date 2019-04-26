@@ -115,10 +115,9 @@ class Session(object):
                 raise InvalidToken('No bearer token found in response. Response was:',
                                    json.dumps(vratoken))
 
-        except requests.exceptions.ConnectionError as e:
-            print(f'Unable to connect to server {cloudurl}')
-            print(f'Exception was {e} ')
-            exit()
+        except requests.exceptions.ConnectionError:
+            raise requests.exceptions.ConnectionError(
+                'Unable to connect to server %s.' % cloudurl)
 
         except requests.exceptions.HTTPError:
             raise requests.exceptions.HTTPError('HTTP error. Status code was:', r.status_code)
