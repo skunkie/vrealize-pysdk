@@ -77,7 +77,7 @@ class Deployment(object):
         # See if we have children and if we do create an instance of the appropriate class
         if deployment['hasChildren'] == True:
             children = Deployment._get_children(session, resource_id)
-            for child in children['content']:
+            for child in children:
                 if child['resourceType'] == 'Infrastructure.Virtual':
                     deployment_children.append(
                         VirtualMachine.fromid(session, child['resourceId']))
@@ -101,7 +101,7 @@ class Deployment(object):
         base_url = 'https://%s/catalog-service/api/consumer/resourceViews' % session.cloudurl
         arguments = "?managedOnly=false&withExtendedData=true&withOperations=true&$filter=parentResource eq '%s'" % resource_id
         children = session._request(url=base_url+arguments)
-        return children
+        return children['content']
 
     def scale_out(self, new_value):
         """Currently this only works with a single tier app.
