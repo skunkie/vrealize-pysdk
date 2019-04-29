@@ -98,7 +98,7 @@ def main():
     if len(catalog_items) > 1:
         raise Exception('Found %d Catalog Items for %s' % (len(catalog_items), args.catalogitem))
 
-    catalog_item_id = catalog_items[0]['id']
+    catalog_item_id = catalog_items[0]['catalogItem']['id']
 
     request_template = vra.get_request_template(catalogitem=catalog_item_id)
 
