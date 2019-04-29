@@ -2,7 +2,7 @@
 
 """
 
-    Retrieves vRealize provisioned items that match the value passed into '-n'
+    An example to retrieve provisioned items that match the value passed into '-n'.
 
 """
 

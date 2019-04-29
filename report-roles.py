@@ -2,7 +2,7 @@
 
 """
 
-    Pulls a report of all the users and assigned roles in a given tenant.
+    An example to create a report of all the users and assigned roles in a given tenant.
 
 """
 

@@ -2,7 +2,7 @@
 
 """
 
-    Retrieves vRealize entitled catalog items that match the value passed into '-n'
+    An example to retrieve entitled catalog items that match the value passed into '-n'.
 
 """
 

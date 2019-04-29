@@ -2,7 +2,7 @@
 
 """
 
-    vRA Request Tool. A tool I use to build VMs for the purposes of running some tests. 
+    An example to request a vRA catalog item.
 
 """
 

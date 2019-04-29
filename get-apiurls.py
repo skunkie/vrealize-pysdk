@@ -2,8 +2,7 @@
 
 """
 
-    Useful tool for collecting the API URLs with JSON templates to assist in API integration
-
+    An example to collect the API URLs with JSON templates to assist in API integration.
 
 """
 
