@@ -54,7 +54,7 @@ Once logged in you can access various methods through the object `vra`.
 
 #### Examples
 
-Get all business groups a user is a member of:
+Get all business groups the user is a group manager of. This is not avalable for ordinary users:
 
     business_groups = vra.get_business_groups()
 
