@@ -224,15 +224,7 @@ class Session(object):
 
         business_groups = self.get_business_groups()
 
-        result = []
-
-        for i in business_groups:
-            target = i['name']
-            if name.lower() in target.lower():
-                element = {'name': i['name'], 'id': i['id']}
-                result.append(element)
-
-        return result
+        return self._filter(business_groups, name)
 
     def get_businessgroup_fromid(self, group_id):
         """Lists a business group using the group id.
