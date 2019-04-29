@@ -1,5 +1,6 @@
 from setuptools import setup
 
+
 setup(
     name='vralib',
     packages=['vralib'],
@@ -11,8 +12,6 @@ setup(
     keywords=['vralib'],
     install_requires=[
         'requests',
-        'prettytable',
-        'six',
     ],
     classifiers=[],
 )
