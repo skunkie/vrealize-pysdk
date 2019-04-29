@@ -466,6 +466,16 @@ class Session(object):
             self.cloudurl, resource_id)
         return self._request(url)
 
+    def get_consumer_resource_byname(self, name):
+        """
+        Loop through all consumer resources until you find the one with the specified name.
+        This method allows you to "filter" returned consumer resources via a partial match.
+        """
+
+        consumer_resources = self.get_consumer_resources()
+
+        return self._filter(consumer_resources, name)
+
     def get_reservations_info(self):
         """
         Retrieves all of the current reservations including allocation percentage and returns a dictionary.
