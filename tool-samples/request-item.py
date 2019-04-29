@@ -31,11 +31,12 @@ def getargs():
                         action='store',
                         help='Username to access the cloud provider')
     parser.add_argument('-t', '--tenant',
-                        required=True,
+                        required=False,
+                        default='vsphere.local',
                         action='store',
                         help='vRealize tenant')
     parser.add_argument('-b', '--businessgroup',
-                        required=True,
+                        required=False,
                         action='store',
                         help='The partial or full name of the business group')
     parser.add_argument('-c', '--catalogitem',
@@ -43,7 +44,7 @@ def getargs():
                         action='store',
                         help='The partial or full name of the catalog item')
     parser.add_argument('-r', '--reasons',
-                        required=True,
+                        required=False,
                         action='store',
                         help='The reason for the requested item. Enclose in quotes.')
     parser.add_argument('-d', '--description',
@@ -83,11 +84,13 @@ def main():
     vra = vralib.Session.login(username, password, cloudurl,
                                tenant, ssl_verify=False)
 
-    business_groups = vra.get_businessgroup_byname(args.businessgroup)
-    if not business_groups:
-        raise NotFoundError('Business Group %s is not found' % args.businessgroup)
-    if len(business_groups) > 1:
-        raise Exception('Found %d Business Groups for %s' % (len(business_groups), args.businessgroup))
+    if args.businessgroup:
+        business_groups = vra.get_businessgroup_byname(args.businessgroup)
+        if not business_groups:
+            raise NotFoundError('Business Group %s is not found' % args.businessgroup)
+        if len(business_groups) > 1:
+            raise Exception('Found %d Business Groups for %s' % (len(business_groups), args.businessgroup))
+        business_group_id = business_groups[0]['id']
 
     catalog_items = vra.get_catalogitem_byname(args.catalogitem)
     if not catalog_items:
@@ -95,14 +98,15 @@ def main():
     if len(catalog_items) > 1:
         raise Exception('Found %d Catalog Items for %s' % (len(catalog_items), args.catalogitem))
 
-    business_group_id = business_groups[0]['id']
     catalog_item_id = catalog_items[0]['id']
 
     request_template = vra.get_request_template(catalogitem=catalog_item_id)
 
-    # the catalog item can be available for more than business group,
-    # so specify the business group
-    request_template['businessGroupId'] = business_group_id
+    if args.businessgroup:
+        # the catalog item can be available for more than business group,
+        # so specify the id of the neccessary business group
+        # otherwise the first business group from the those available will be used
+        request_template['businessGroupId'] = business_group_id
     if args.description:
         request_template['description'] = args.description
     if args.reasons:
