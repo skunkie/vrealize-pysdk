@@ -50,10 +50,20 @@ Variables are defined as:
 
 ### Getting data from the API
 
-Once logged in you can access various methods through the object. For example to retrieve all of the available catalog items:
+Once logged in you can access various methods through the object `vra`.
 
-    catalog = vra.get_catalogitem_byname(name)
+#### Examples
 
-Most returns are going to be python dictionaries. 
+Get all business groups a user is a member of:
+
+    business_groups = vra.get_business_groups()
+
+Get all catalog items the user is entitled to:
+
+    catalog_items = vra.get_entitled_catalog_items()
+
+Get a catalog item by name 'cent':
+
+    catalog_item = vra.get_catalogitem_byname('cent')
 
 # Contributions welcome!
