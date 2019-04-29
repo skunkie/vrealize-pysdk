@@ -81,15 +81,15 @@ def main():
 
     business_groups = vra.get_businessgroup_byname(args.businessgroup)
     if not business_groups:
-        raise NotFoundError("Business Group %s is not found" % args.businessgroup)
+        raise NotFoundError('Business Group %s is not found' % args.businessgroup)
     if len(business_groups) > 1:
-        raise Exception("Found %d Business Groups for %s" % (len(business_groups), args.businessgroup))
+        raise Exception('Found %d Business Groups for %s' % (len(business_groups), args.businessgroup))
 
     catalog_items = vra.get_catalogitem_byname(args.catalogitem)
     if not catalog_items:
-        raise NotFoundError("Catalog Item %s is not found" % args.catalogitem)
+        raise NotFoundError('Catalog Item %s is not found' % args.catalogitem)
     if len(catalog_items) > 1:
-        raise Exception("Found %d Catalog Items for %s" % (len(catalog_items), args.catalogitem))
+        raise Exception('Found %d Catalog Items for %s' % (len(catalog_items), args.catalogitem))
 
     business_group_id = business_groups[0]['id']
     catalog_item_id = catalog_items[0]['id']
@@ -110,17 +110,17 @@ def main():
         fd.close()
         request_template = patch_dict(request_template, d)
 
-    # request_template['data']['inputServices'] = ["application-2b47b67a-7563-41df-bc9a-b01374210cad"]
-    # request_template['data']['defaultSectionId'] = "d69e3a00-6cd9-4832-b7ba-0498b17acda4"
-    # request_template['data']['inputSources'] = ["securitygroup-bf4bda4c-fc17-4935-a635-7562d1b36cf0"]
-    # request_template['data']['inputDestinations'] = ["securitygroup-bf4bda4c-fc17-4935-a635-7562d1b36cf0"]
-    # request_template['data']['ruleName'] = "vra-service-test001"
+    # request_template['data']['inputServices'] = ['application-2b47b67a-7563-41df-bc9a-b01374210cad']
+    # request_template['data']['defaultSectionId'] = 'd69e3a00-6cd9-4832-b7ba-0498b17acda4'
+    # request_template['data']['inputSources'] = ['securitygroup-bf4bda4c-fc17-4935-a635-7562d1b36cf0']
+    # request_template['data']['inputDestinations'] = ['securitygroup-bf4bda4c-fc17-4935-a635-7562d1b36cf0']
+    # request_template['data']['ruleName'] = 'vra-service-test001'
 
     pprint(request_template, indent=4)
 
     # TODO add some logic to query for options here.
     # TODO should be noted that this only changes one custom property. Need to design some logic to extend this
-    # request_template['data']['Linux_vSphere_VM']['data']['Puppet.RoleClass'] = "role::linux_mysql_database"
+    # request_template['data']['Linux_vSphere_VM']['data']['Puppet.RoleClass'] = 'role::linux_mysql_database'
 
     build_vm = vra.request_item(catalogitem=catalog_item_id,
                                 payload=request_template)
@@ -139,7 +139,7 @@ def main():
             break
         time.sleep(5)
 
-    print("#" * 80)
+    print('#' * 80)
     pprint(vra_request, indent=4)
 
 
