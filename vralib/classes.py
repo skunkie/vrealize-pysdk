@@ -201,6 +201,10 @@ class Session(object):
 
         return result
 
+    def _filter(self, items, name, key='name'):
+        """Filter a list of dicts by `key` if `name` is in it."""
+        return [i for i in items if name.lower() in i[key].lower()]
+
     def get_business_groups(self):
         """
         Retrieves a list of all vRA business groups for the currently logged in user.
