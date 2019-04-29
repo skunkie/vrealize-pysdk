@@ -68,7 +68,7 @@ def main():
     with open(outfile, "w") as f:
         csv_file = csv.writer(f)
         csv_file.writerow(['user', 'domain', 'type', 'id', 'role', 'scope'])
-        for i,val in enumerate(subtenantroles['content']):
+        for i, val in enumerate(subtenantroles):
             if val['name'] == 'Basic User':
                 scoperole = val['scopeRoleRef']
                 attype = val['@type']

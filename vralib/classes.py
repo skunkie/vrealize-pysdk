@@ -186,18 +186,18 @@ class Session(object):
         """
         Iterates over pages of the HTTP Response.
 
-        :return: python dictionary with the JSON response contents.
+        :return: a list of requested items from the `content` of the response.
         """
 
-        result = self._request(url)
+        result = []
 
-        if result['metadata']['totalPages'] != 1:
-            page = 2
-            while page <= result['metadata']['totalPages']:
-                next_page = self._request(url + '?page=%s' % page)
-                for i in next_page['content']:
-                    result['content'].append(i)
-                page += 1
+        n = 1
+        while True:
+            page = self._request('%s?page=%s' % (url, n))
+            result = result + page['content']
+            if n <= page['metadata']['totalPages']:
+                break
+            n += 1
 
         return result
 
@@ -222,7 +222,7 @@ class Session(object):
 
         result = []
 
-        for i in business_groups['content']:
+        for i in business_groups:
             target = i['name']
             if name.lower() in target.lower():
                 element = {'name': i['name'], 'id': i['id']}
@@ -297,7 +297,7 @@ class Session(object):
 
         result = []
 
-        for i in catalog['content']:
+        for i in catalog:
             target = i['catalogItem']['name']
             if name.lower() in target.lower():
                 element = {'name': i['catalogItem']

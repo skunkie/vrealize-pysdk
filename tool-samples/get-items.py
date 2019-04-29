@@ -62,7 +62,7 @@ def main():
     # TODO VMware doesn't appear to use the same format for data it gets back from the API
     # TODO will need to check for this and deal with it somehow.
     # TODO I think I need to determine what the item is first then based on that find the label
-    for i in items['content']:
+    for i in items:
 
         out.add_row((i['name'], i['id']))
         # print i['id']

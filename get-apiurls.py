@@ -49,7 +49,7 @@ def main():
 
     catalog_item = vra.get_catalogitem_byid(catalog_id)
 
-    catalog_name = (catalog_item["content"][0]["catalogItem"]["name"])
+    catalog_name = (catalog_item[0]["catalogItem"]["name"])
 
     print(f"Catalog Item Name: {catalog_name}")
     print(f"Catalog Item ID: {catalog_id}")
