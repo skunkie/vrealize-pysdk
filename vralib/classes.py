@@ -280,7 +280,7 @@ class Session(object):
 
         vra = vralib.Session.login(username, password, cloudurl, tenant, ssl_verify=False)
 
-        catalog_offerings = vra.get_catalogitem_byname(name='cent', vra.get_get_entitledcatalogitems())
+        catalog_offerings = vra.get_catalogitem_byname(name='cent', vra.get_entitled_catalog_items())
 
         :param name: A required string that will be used to filter the return to items that contain the string.
         :param catalog: An optional dictionary of all of the catalog items available to the user.
@@ -294,11 +294,8 @@ class Session(object):
         result = []
 
         for i in catalog:
-            target = i['catalogItem']['name']
-            if name.lower() in target.lower():
-                element = {'name': i['catalogItem']
-                           ['name'], 'id': i['catalogItem']['id']}
-                result.append(element)
+            if name.lower() in i['catalogItem']['name'].lower():
+                result.append(i)
 
         return result
 
