@@ -14,6 +14,7 @@ __version__ = "$Revision$"
 
 import getpass
 import argparse
+import six
 import vralib
 from prettytable import PrettyTable
 
@@ -48,9 +49,9 @@ def main():
     name = args.name
 
     if not username:
-        username = input("vRA Username (user@domain):")
+        username = six.moves.input('vRA Username (user@domain): ')
 
-    password = getpass.getpass("vRA Password:")
+    password = getpass.getpass('vRA Password: ')
 
     vra = vralib.Session.login(username, password, cloudurl, tenant, ssl_verify=False)
 

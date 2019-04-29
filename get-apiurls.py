@@ -9,6 +9,7 @@
 import argparse
 import getpass
 import json
+import six
 import vralib
 
 def getargs():
@@ -40,9 +41,9 @@ def main():
     catalog_id = args.id
 
     if not username:
-        username = input("vRA Username: ")
+        username = six.moves.input('vRA Username (user@domain): ')
 
-    password = getpass.getpass("vRA Password:")
+    password = getpass.getpass('vRA Password: ')
 
     vra = vralib.Session.login(username=username, password=password, cloudurl=cloudurl,tenant=tenant, ssl_verify=False)
 

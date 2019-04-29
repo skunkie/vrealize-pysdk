@@ -17,6 +17,7 @@ import getpass
 import argparse
 import vralib
 import csv
+import six
 
 
 def getargs():
@@ -54,11 +55,9 @@ def main():
 
 
     if not username:
-        username = raw_input("vRA Username (user@domain):")
-    else:
-        pass
+        username = six.moves.input('vRA Username (user@domain): ')
 
-    password = getpass.getpass("vRA Password:")
+    password = getpass.getpass('vRA Password: ')
 
     vra = vralib.Session.login(username, password, cloudurl, tenant, ssl_verify=False)
 
