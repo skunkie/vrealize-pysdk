@@ -59,6 +59,10 @@ def getargs():
 
 
 def patch_dict(d, p):
+    """Patches the dict `d`.
+
+    Patches the dict `d` with values from the "patcher" dict `p`.
+    """
     for k in p:
         if k in d.keys():
             if type(d[k]) == dict:
