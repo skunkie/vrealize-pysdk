@@ -8,8 +8,8 @@
 
 __version__ = "$Revision"
 
-import getpass
 import argparse
+import getpass
 import json
 import six
 import time

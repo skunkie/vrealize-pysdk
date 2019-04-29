@@ -15,6 +15,7 @@ __version__ = "$Revision$"
 import getpass
 import argparse
 import six
+
 import vralib
 from prettytable import PrettyTable
 
@@ -39,6 +40,7 @@ def getargs():
                         help='The partial or full name of the catalog item you want the ID for')
     args = parser.parse_args()
     return args
+
 
 def main():
 
@@ -68,7 +70,9 @@ def main():
         out.add_row((i['name'], i['id']))
         # print i['id']
         # print i['parentResourceRef']
-    print out
+        #
+    print(out)
+
 
 if __name__ == '__main__':
     main()

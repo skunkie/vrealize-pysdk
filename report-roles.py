@@ -13,11 +13,12 @@
 __version__ = "$Revision$"
 # $Source$
 
-import getpass
 import argparse
-import vralib
 import csv
+import getpass
 import six
+
+import vralib
 
 
 def getargs():
@@ -109,5 +110,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-

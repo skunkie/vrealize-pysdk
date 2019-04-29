@@ -10,7 +10,9 @@ import argparse
 import getpass
 import json
 import six
+
 import vralib
+
 
 def getargs():
     parser = argparse.ArgumentParser()
@@ -32,6 +34,7 @@ def getargs():
                         help='The partial or full name of the catalog item you want API information for')
     args = parser.parse_args()
     return args
+
 
 def main():
     args = getargs()
@@ -58,6 +61,7 @@ def main():
     request_template = vra.get_request_template(catalogitem=catalog_id)
     print(json.dumps(request_template, indent=4))
     print(f"POST Template to the following URL: https://{vra.cloudurl}/catalog-service/api/consumer/entitledCatalogItems/{catalog_id}/requests")
+
 
 if __name__ == '__main__':
     main()
