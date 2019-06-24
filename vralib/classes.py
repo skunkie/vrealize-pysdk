@@ -180,7 +180,7 @@ class Session(object):
         else:
             raise Exception('Method %s is not implemented.' % request_method)
 
-        return json.loads(r.content)
+        return json.loads(r.content or 'null')
 
     def _iterate_pages(self, url):
         """
