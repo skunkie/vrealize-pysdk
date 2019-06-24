@@ -64,15 +64,15 @@ class Deployment(object):
         operations = []
         deployment_children = []
 
-        for op in deployment['operations']:
+        for operation in deployment['operations']:
             base_url = 'https://%s/catalog-service/api/consumer/resources' % session.cloudurl
-            operation = {'name': op['name'],
-                         'description': op['description'],
-                         'id': op['id'],
-                         'template_url': '%s/%s/actions/%s/requests/template' % (base_url, resource_id, op['id']),
-                         'request_url': '%s/%s/actions/%s/requests' % (base_url, resource_id, op['id'])}
-
-            operations.append(operation)
+            operations.append({
+                'name': operation['name'],
+                'description': operation['description'],
+                'id': operation['id'],
+                'template_url': '%s/%s/actions/%s/requests/template' % (base_url, resource_id, operation['id']),
+                'request_url': '%s/%s/actions/%s/requests' % (base_url, resource_id, operation['id']),
+            })
 
         # See if we have children and if we do create an instance of the appropriate class
         if deployment['hasChildren'] == True:
