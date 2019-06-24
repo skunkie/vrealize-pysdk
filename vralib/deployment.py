@@ -70,7 +70,7 @@ class Deployment(object):
                          'description': op['description'],
                          'id': op['id'],
                          'template_url': '%s/%s/actions/%s/requests/template' % (base_url, resource_id, op['id']),
-                         'request_url': '%s/%s/actions/%s/requests'} % (base_url, resource_id, op['id'])
+                         'request_url': '%s/%s/actions/%s/requests' % (base_url, resource_id, op['id'])}
 
             operations.append(operation)
 
