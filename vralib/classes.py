@@ -194,8 +194,9 @@ class Session(object):
         n = 1
         while True:
             page = self._request('%s?page=%s' % (url, n))
-            result = result + page['content']
-            if n <= page['metadata']['totalPages']:
+            result += page['content']
+            if n <= page['metadata']['totalPages'] or \
+                    page['metadata']['totalElements'] == 0:
                 break
             n += 1
 
