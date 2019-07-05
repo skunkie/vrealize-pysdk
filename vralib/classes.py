@@ -182,7 +182,7 @@ class Session(object):
 
         return json.loads(r.content or 'null')
 
-    def _iterate_pages(self, url):
+    def _iterate_pages(self, url, query=''):
         """
         Iterates over pages of the HTTP Response.
 
@@ -193,7 +193,7 @@ class Session(object):
 
         n = 1
         while True:
-            page = self._request('%s?page=%s' % (url, n))
+            page = self._request('%s?page=%s%s' % (url, n, query))
             result += page['content']
             if n == page['metadata']['totalPages'] or \
                     page['metadata']['totalElements'] == 0:
