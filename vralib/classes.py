@@ -217,6 +217,38 @@ class Session(object):
             self.cloudurl, self.tenant)
         return self._iterate_pages(url)
 
+    def get_business_groups_byuser(self, username, role=None, expand_groups=False):
+        """
+        Finds business groups that a user belongs to.
+        They might be filtered by role and/or expanded to take into account SSO/custom groups that the user belongs to.
+        The returned collection of subtenants contains the list of roles that the user has on those tenants
+        (without the list of principals that belong to those tenants).
+
+        Basic usage:
+
+        business_groups = vra.get_business_groups_byuser(username='vrauser@vsphere.local')
+
+        :param username: User Prinical Name for the user, e.g. vrauser@vsphere.local
+        :param role: the role to filter:
+            `CSP_SUBTENANT_MANAGER` for Business Group Manager,
+            `CSP_SUPPORT` for Support User,
+            `CSP_CONSUMER_WITH_SHARED_ACCESS` for Shared Access User,
+            `CSP_CONSUMER` for Basic User.
+        :param expand_groups: True to recursively expand groups
+        :return: python dictionary with the JSON response contents.
+        """
+
+        url = 'https://%s/identity/api/tenants/%s/principals/%s/subtenants' % (
+            self.cloudurl, self.tenant, username)
+
+        query = ''
+        if role is not None:
+            query += '&role=%s' % role
+        if expand_groups is True:
+            query += '&expandGroups=true'
+
+        return self._iterate_pages(url, query=query)
+
     def get_businessgroup_byname(self, name):
         """
         Loop through all vRA business groups until you find the one with the specified name.
