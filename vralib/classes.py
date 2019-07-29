@@ -31,7 +31,7 @@ class Session(object):
     Session.get_business_groups()
         Returns a dictionary of all business groups available to the logged in user.
 
-    Session.get_entitledcatalogitems()
+    Session.get_entitled_catalog_items()
         Returns a dictionary of all of the catalog items available to the logged in user.
 
     Session.get_catalogitem_byname(name)
