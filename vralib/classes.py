@@ -126,7 +126,7 @@ class Session(object):
             raise requests.exceptions.HTTPError(
                 'HTTP error. Status code was:', r.status_code)
 
-    def _request(self, url, request_method='GET', payload=None, **kwargs):
+    def _request(self, url, request_method='GET', payload=None, content_only=True, **kwargs):
         """
         Generic requestor method for all of the HTTP methods. This gets invoked by pretty much everything in the API.
         You can also use it to do anything not yet implemented in the API. For example:
@@ -138,9 +138,11 @@ class Session(object):
         :param url: The complete URL for the requested resource
         :param request_method: An HTTP method that is either PUT, POST or GET
         :param payload: Used to store a resource that is used in either POST or PUT operations
+        :param content_only: if True, returns the json-encoded content of a response, if any.
         :param kwargs: Unused currently
 
-        :return: A python dictionary containing the response JSON
+        :return: if content_only is set to True, the json-encoded content of a response,
+                 otherwise a response object
         """
 
         if request_method == "PUT" or "POST" and payload:
@@ -180,7 +182,10 @@ class Session(object):
         else:
             raise Exception('Method %s is not implemented.' % request_method)
 
-        return json.loads(r.content or 'null')
+        if content_only == True:
+            return json.loads(r.content or 'null')
+
+        return r
 
     def _iterate_pages(self, url, query=''):
         """
