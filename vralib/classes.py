@@ -317,6 +317,41 @@ class Session(object):
 
         return self._iterate_pages(url, query=query)
 
+    def get_entitled_catalog_item_views(self, service_id=None, on_behalf_of=None, subtenant_id=None):
+        """
+        Get all ConsumerEntitledCatalogItemView for the current user.
+        ConsumerEntitledCatalogItemView are basically catalog items:
+            - in an active state,
+            - the current user has the right to consume,
+            - the current user is entitled to consume,
+            - associated to a service.
+
+        Basic usage:
+
+        entitled_catalog_items = vra.get_entitled_catalog_item_views(on_behalf_of='vrauser@vsphere.local')
+
+        :param service_id:   optional query parameter to filter the returned Catalog Items
+                             by one specific Service
+        :param on_behalf_of: optional query parameter providing the value of the user Id
+                             to use when the intention is to request on behalf of someone else
+        :param subtenant_id: optional query parameter which dictates if the output should be filtered
+                             for given subtenant only
+
+        :return: python dictionary with the JSON response contents.
+        """
+
+        url = 'https://%s/catalog-service/api/consumer/entitledCatalogItemViews' % self.cloudurl
+
+        query = ''
+        if service_id is not None:
+            query += '&serviceId=%s' % service_id
+        if on_behalf_of is not None:
+            query += '&onBehalfOf=%s' % on_behalf_of
+        if subtenant_id is not None:
+            query += '&subtenantId=%s' % subtenant_id
+
+        return self._iterate_pages(url, query=query)
+
     def get_catalogitem_byname(self, name, catalog=False):
         """Loop through catalog items until you find the one with the specified name.        
 
