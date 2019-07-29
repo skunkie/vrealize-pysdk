@@ -146,10 +146,24 @@ class Deployment(object):
                 return self.session._request(url=o['template_url'])
 
     def execute_operation(self, operation, payload):
+        """Execute an operation on a resource.
+
+        :param operation: A string that includes the name of an operation.
+                          Operations can be found stored in the operations attribute
+        :param payload: a template from the get_operation_template method
+
+        :return: The ID of a request for the operation
+        """
         # TODO See if there's a better way to find the operation to improve performance
         for o in self.operations:
             if o['name'] == operation:
-                return self.session._request(url=o['request_url'], request_method='POST', payload=payload)
+                response = self.session._request(
+                    url=o['request_url'], request_method='POST', payload=payload, content_only=False)
+                location = response.headers.get('Location', None)
+                if location:
+                    request_id = location.split(
+                        'https://%s/catalog-service/api/consumer/requests/' % self.session.cloudurl)[1]
+                    return self.session.get_request(request_id)
 
     def destroy(self, force=False):
         """Used to destroy the deployment. The deployment may be force destroyed if it failed previously.
