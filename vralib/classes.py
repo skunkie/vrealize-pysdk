@@ -280,19 +280,42 @@ class Session(object):
             self.cloudurl, self.tenant, group_id)
         return self._request(url, request_method='DELETE')
 
-    def get_entitled_catalog_items(self):
+    def get_entitled_catalog_items(self, service_id=None, on_behalf_of=None, subtenant_id=None):
         """
-        Retrieves a dictionary of all the currently available catalog items for the logged in user/tenant.
-        This can result in multi-page output so I've added some basic pagination here.
+        Deprecated since version 7.5.
+        Get a ConsumerEntitledCatalogItem by its unique Id.
+        ConsumerEntitledCatalogItem are basically catalog items:
+            - in an active state,
+            - the current user has the right to consume,
+            - the current user is entitled to consume,
+            - associated to a service.
 
-        :return:
+        Basic usage:
+
+        entitled_catalog_items = vra.get_entitled_catalog_items(on_behalf_of='vrauser@vsphere.local')
+
+        :param service_id:   optional query parameter to filter the returned Catalog Items
+                             by one specific Service
+        :param on_behalf_of: optional query parameter providing the value of the user Id
+                             to use when the intention is to request on behalf of someone else
+        :param subtenant_id: optional query parameter which dictates if the output should be filtered
+                             for given subtenant only
+
+        :return: python dictionary with the JSON response contents.
         """
 
-        # TODO update the output dict's page number to reflect a list of page numbers iterated through
-        # TODO add exception handling for when you're not actually entitled to anything.
-        # TODO probably need to deprecate this function
+        # TODO add a deprecation warning
         url = 'https://%s/catalog-service/api/consumer/entitledCatalogItems' % self.cloudurl
-        return self._iterate_pages(url)
+
+        query = ''
+        if service_id is not None:
+            query += '&serviceId=%s' % service_id
+        if on_behalf_of is not None:
+            query += '&onBehalfOf=%s' % on_behalf_of
+        if subtenant_id is not None:
+            query += '&subtenantId=%s' % subtenant_id
+
+        return self._iterate_pages(url, query=query)
 
     def get_catalogitem_byname(self, name, catalog=False):
         """Loop through catalog items until you find the one with the specified name.        
